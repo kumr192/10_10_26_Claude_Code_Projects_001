@@ -124,6 +124,21 @@ It depends on your computer, and **it is slow without a strong graphics card**. 
 
 Most of the time is the summary step. Speech-to-text took about 10 minutes of that. A computer with an Apple M-series chip or a large NVIDIA card (8 GB+ of video memory) should be much faster. `--fast` gives shorter, less accurate summaries, so use the default when quality matters. You can also add `--whisper-model base.en` to speed up the speech step.
 
+## Model downloads and the optional Hugging Face token
+
+On the first run, the models are downloaded from [Hugging Face](https://huggingface.co) and saved in `~/.cache/huggingface/hub` (on Windows: `C:\Users\<you>\.cache\huggingface\hub`). That is about 0.5 GB for speech (Whisper `small.en`) and a few GB for the IBM Granite summary model. After that, nothing is downloaded again.
+
+These models are public, so **you do not need a Hugging Face account**. You may see a warning: "You are sending unauthenticated requests". It is harmless.
+
+**Optional:** a free token removes that warning and can give faster downloads.
+
+1. On huggingface.co, go to Settings > Access Tokens and create a **Read** token.
+2. Save it as the `HF_TOKEN` setting:
+   - **Windows** (PowerShell): `setx HF_TOKEN "hf_your_token_here"`, then close PowerShell and open it again.
+   - **Mac**: add the line `export HF_TOKEN=hf_your_token_here` to `~/.zshrc`, then open a new Terminal.
+
+Keep the token private. Never paste it into the code, commit it to Git, or share it.
+
 ## Troubleshooting
 
 - **"Could not transcribe the audio"**: make sure the file plays in a normal media player. On the first run, check your internet connection.
