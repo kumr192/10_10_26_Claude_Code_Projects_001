@@ -10,7 +10,7 @@ from pathlib import Path
 # Hide a harmless Windows warning about the model download cache
 os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
-from .summarize import DEFAULT_MODEL, summarize
+from .summarize import DEFAULT_MODEL, FAST_MODEL, summarize
 from .transcribe import transcribe
 
 
@@ -42,12 +42,18 @@ def main() -> None:
         default="small.en",
         help="Speech model size: tiny.en, base.en, small.en (default), medium.en. Bigger = more accurate but slower.",
     )
-    parser.add_argument("--summary-model", default=DEFAULT_MODEL, help="Hugging Face model used for the summary")
+    parser.add_argument(
+        "--fast",
+        action="store_true",
+        help="Use a smaller summary model: about twice as fast, but with less detail",
+    )
+    parser.add_argument("--summary-model", default=None, help="Hugging Face model used for the summary (overrides --fast)")
     args = parser.parse_args()
 
     audio: Path = args.audio.expanduser()
     if not audio.is_file():
         sys.exit(f"Could not find the file: {audio}")
+    summary_model = args.summary_model or (FAST_MODEL if args.fast else DEFAULT_MODEL)
     output = args.output or audio.with_name(f"{audio.stem}_summary.md")
 
     start = time.time()
@@ -64,7 +70,7 @@ def main() -> None:
 
     print("Step 2 of 2: writing the summary")
     try:
-        summary = summarize(transcript, args.summary_model)
+        summary = summarize(transcript, summary_model)
     except Exception as error:
         sys.exit(
             f"Could not write the summary: {error}\n"

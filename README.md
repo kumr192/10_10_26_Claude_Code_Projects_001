@@ -109,12 +109,13 @@ Saved: /path/to/meeting_summary.md
 | Option | What it does |
 |---|---|
 | `-o summary.md` | Save the result somewhere else |
+| `--fast` | Smaller summary model (IBM Granite 4.0 1B, about 3 GB download). Roughly twice as fast, with less detail |
 | `--whisper-model base.en` | Faster but less accurate speech-to-text (`tiny.en`, `base.en`, `small.en` default, `medium.en`) |
 | `--summary-model <name>` | Use a different Hugging Face model for the summary |
 
 ## How long does it take?
 
-It depends on your computer. A machine with an NVIDIA graphics card or an Apple M-series chip is much faster. On a laptop with only a regular processor, a 1-hour recording can take **20 minutes or more**, and the summary step is the slow part. Use `--whisper-model base.en` to speed up the speech step.
+It depends on your computer. A machine with an NVIDIA graphics card or an Apple M-series chip is much faster. On a laptop with only a regular processor, a 1-hour recording can take **20 minutes or more**, and the summary step is the slow part. Add `--fast` to make the summary step quicker, and `--whisper-model base.en` to speed up the speech step.
 
 ## Troubleshooting
 
