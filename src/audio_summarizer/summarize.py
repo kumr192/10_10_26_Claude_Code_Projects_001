@@ -4,11 +4,15 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 DEFAULT_MODEL = "ibm-granite/granite-4.1-3b"
+FAST_MODEL = "ibm-granite/granite-4.0-1b"  # smaller: roughly half the time, less detail
 CHUNK_WORDS = 2500  # about 15-20 minutes of talking
 
 STYLE = (
     "Write in very simple, everyday English. Use short sentences. "
     "Avoid jargon. If the speakers use a technical term or acronym, explain it in a few plain words. "
+    "Use people's names when the transcript gives them. Never write 'the speaker'; "
+    "if there is no name, say 'they', or use the person's role (for example 'the manager'). "
+    "Each bullet must be one short, clear sentence about one thing. "
     "Only use facts from the transcript. Do not make anything up."
 )
 
@@ -40,7 +44,7 @@ def pick_device() -> tuple[str, torch.dtype]:
 class Summarizer:
     def __init__(self, model_name: str = DEFAULT_MODEL):
         self.device, dtype = pick_device()
-        print(f"  Loading summary model '{model_name}' on {self.device} (first run downloads ~6 GB)...")
+        print(f"  Loading summary model '{model_name}' on {self.device} (first run downloads it, 3-7 GB)...")
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(model_name, dtype=dtype)
         self.model.to(self.device)
