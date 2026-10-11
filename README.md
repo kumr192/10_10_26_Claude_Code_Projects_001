@@ -109,13 +109,20 @@ Saved: /path/to/meeting_summary.md
 | Option | What it does |
 |---|---|
 | `-o summary.md` | Save the result somewhere else |
-| `--fast` | Smaller summary model (IBM Granite 4.0 1B, about 3 GB download). Roughly twice as fast, with less detail |
+| `--fast` | Smaller summary model (IBM Granite 4.0 1B, about 3 GB download). About twice as fast, but less accurate and less detailed |
 | `--whisper-model base.en` | Faster but less accurate speech-to-text (`tiny.en`, `base.en`, `small.en` default, `medium.en`) |
 | `--summary-model <name>` | Use a different Hugging Face model for the summary |
 
 ## How long does it take?
 
-It depends on your computer. A machine with an NVIDIA graphics card or an Apple M-series chip is much faster. On a laptop with only a regular processor, a 1-hour recording can take **20 minutes or more**, and the summary step is the slow part. Add `--fast` to make the summary step quicker, and `--whisper-model base.en` to speed up the speech step.
+It depends on your computer, and **it is slow without a strong graphics card**. Real measurement on a Windows laptop (regular processor, small 4 GB NVIDIA card that could not be used), 23-minute recording:
+
+| Mode | Total time |
+|---|---|
+| Default (IBM Granite 4.1 3B) | about 55 minutes |
+| `--fast` (IBM Granite 4.0 1B) | about 26 minutes |
+
+Most of the time is the summary step. Speech-to-text took about 10 minutes of that. A computer with an Apple M-series chip or a large NVIDIA card (8 GB+ of video memory) should be much faster. `--fast` gives shorter, less accurate summaries, so use the default when quality matters. You can also add `--whisper-model base.en` to speed up the speech step.
 
 ## Troubleshooting
 
