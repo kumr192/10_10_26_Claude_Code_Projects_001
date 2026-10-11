@@ -27,12 +27,7 @@ def pick_whisper_device() -> tuple[str, str]:
     return "cpu", "int8"
 
 
-def transcribe(path: Path, model_name: str = "small.en") -> tuple[str, float]:
-    """Return (transcript text, audio length in seconds)."""
-    audio = load_audio(path)
-    duration = len(audio) / SAMPLE_RATE
-
-    device, compute_type = pick_whisper_device()
+def run_whisper(audio, duration: float, model_name: str, device: str, compute_type: str) -> list[str]:
     print(f"  Loading speech model '{model_name}' on {device} (first run downloads it)...")
     model = WhisperModel(model_name, device=device, compute_type=compute_type)
 
@@ -45,4 +40,21 @@ def transcribe(path: Path, model_name: str = "small.en") -> tuple[str, float]:
         print(f"\r  Transcribing... {done:4.0%}", end="", flush=True)
         lines.append(segment.text.strip())
     print()
+    return lines
+
+
+def transcribe(path: Path, model_name: str = "small.en") -> tuple[str, float]:
+    """Return (transcript text, audio length in seconds)."""
+    audio = load_audio(path)
+    duration = len(audio) / SAMPLE_RATE
+
+    device, compute_type = pick_whisper_device()
+    try:
+        lines = run_whisper(audio, duration, model_name, device, compute_type)
+    except Exception as error:
+        if device == "cpu":
+            raise
+        # An NVIDIA card is present but its CUDA libraries (e.g. cublas64_12.dll) are missing.
+        print(f"\n  GPU not usable ({error}). Switching to CPU, which is slower but works everywhere.")
+        lines = run_whisper(audio, duration, model_name, "cpu", "int8")
     return "\n".join(lines), duration

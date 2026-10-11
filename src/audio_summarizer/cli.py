@@ -1,10 +1,14 @@
 """Command line entry point: `uv run summarize "my meeting.wma"`."""
 
 import argparse
+import os
 import sys
 import time
 from datetime import date
 from pathlib import Path
+
+# Hide a harmless Windows warning about the model download cache
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 from .summarize import DEFAULT_MODEL, summarize
 from .transcribe import transcribe
